@@ -148,11 +148,11 @@ public class FileLoadOperation {
     private final static int stateCanceled = 4;
     private final static int stateCancelling = 5;
 
-    private int downloadChunkSize = 1024 * 32;
-    private int downloadChunkSizeBig = 1024 * 128;
-    private int cdnChunkCheckSize = 1024 * 128;
-    private int maxDownloadRequests = 4;
-    private int maxDownloadRequestsBig = 4;
+    private int downloadChunkSize = 1024 * 128;
+    private int downloadChunkSizeBig = 1024 * 512;
+    private int cdnChunkCheckSize = 1024 * 512;
+    private int maxDownloadRequests = 8;
+    private int maxDownloadRequestsBig = 8;
     private int bigFileSizeFrom = 10 * 1024 * 1024;
     private int maxCdnParts = (int) (FileLoader.DEFAULT_MAX_FILE_SIZE / downloadChunkSizeBig);
 
@@ -280,7 +280,7 @@ public class FileLoadOperation {
     }
 
     private void updateParams() {
-        if ((preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams) && !forceSmallChunk) {
+        /*if ((preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams) && !forceSmallChunk) {
             downloadChunkSizeBig = 1024 * 512;
             maxDownloadRequests = 8;
             maxDownloadRequestsBig = 8;
@@ -288,7 +288,10 @@ public class FileLoadOperation {
             downloadChunkSizeBig = 1024 * 128;
             maxDownloadRequests = 4;
             maxDownloadRequestsBig = 4;
-        }
+        }*/
+        downloadChunkSizeBig = 1024 * 512;
+        maxDownloadRequests = 16;
+        maxDownloadRequestsBig = 16;
         maxCdnParts = (int) (FileLoader.DEFAULT_MAX_FILE_SIZE / downloadChunkSizeBig);
     }
 
@@ -811,8 +814,8 @@ public class FileLoadOperation {
                 if (BuildVars.LOGS_ENABLED) {
                     FileLog.d("debug_loading: restart with small chunk");
                 }
-                currentDownloadChunkSize =  1024 * 32;
-                currentMaxDownloadRequests = 4;
+                currentDownloadChunkSize =  1024 * 128;
+                currentMaxDownloadRequests = 8;
             } else if (isStory) {
                 currentDownloadChunkSize = downloadChunkSizeBig;
                 currentMaxDownloadRequests = maxDownloadRequestsBig;
@@ -2017,8 +2020,8 @@ public class FileLoadOperation {
                 removePart(notRequestedBytesRanges, requestInfo.offset, requestInfo.offset + requestInfo.chunkSize);
                 if (!forceSmallChunk) {
                     forceSmallChunk = true;
-                    currentDownloadChunkSize =  1024 * 32;
-                    currentMaxDownloadRequests = 4;
+                    currentDownloadChunkSize =  1024 * 128;
+                    currentMaxDownloadRequests = 8;
                 }
                 startDownloadRequest(requestInfo.connectionType);
             } else if (error.text.contains("FILE_MIGRATE_")) {
